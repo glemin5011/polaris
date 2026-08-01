@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from polaris.bootstrap.api import create_app
+from polaris.runtime.bootstrap.api import create_app
 
 def test_health_endpoint_reports_ok() -> None:
     with TestClient(create_app()) as client:

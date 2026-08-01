@@ -316,9 +316,9 @@ Owns:
 - metric results;
 - model comparisons.
 
-### 6.8 Platform Support
+### 6.8 Shared Technical Support
 
-Platform support is not a domain bounded context. It contains shared technical records and adapters used through narrow application ports:
+Shared technical support is an architectural category, not a domain bounded context or a top-level `platform` package. It includes technical records and adapters used through narrow application ports:
 
 - background jobs;
 - transactional outbox;
@@ -328,57 +328,71 @@ Platform support is not a domain bounded context. It contains shared technical r
 - audit events;
 - blob references.
 
-Platform types must not contain policy-domain rules, and domain or application packages must not import concrete platform adapters.
+Context-neutral implementations belong in `runtime/infrastructure`; implementations of context-owned ports belong in that context's `adapters` package. Domain-significant concepts, including analysis provenance, remain in the owning bounded context. Technical support types must not contain policy-domain rules, and domain or application packages must not import concrete adapters.
 
 ## 7. Internal Module Architecture
 
-Each bounded context uses the following structure:
+The Python package separates business capabilities from the executable application shell:
+
+- `contexts/` contains only named bounded contexts and makes the domain visible;
+- `runtime/config.py` defines typed settings but does not construct services;
+- `runtime/bootstrap/` is the composition root that assembles processes and owns lifecycle wiring;
+- `runtime/entrypoints/` contains API, worker, and CLI driving adapters;
+- `runtime/infrastructure/` contains context-neutral technical foundations;
+- `main.py` is a minimal process import target and contains no application wiring.
+
+Do not create `shared/` until at least two contexts require one domain concept with identical meaning and invariants. Such a concept belongs in `shared/domain/`; general utilities, transport models, configuration, and infrastructure do not.
+
+Each bounded context grows the following structure only as real behavior requires it:
 
 ```text
-context/
+contexts/<context>/
 ├── domain/
-│   ├── aggregates.py
-│   ├── entities.py
-│   ├── value_objects.py
+│   ├── <domain-concept>.py
 │   ├── events.py
 │   ├── errors.py
-│   ├── repositories.py
-│   └── services.py
+│   └── repositories.py
 ├── application/
 │   ├── commands/
 │   ├── queries/
-│   ├── handlers/
 │   ├── dto.py
 │   └── ports.py
-├── infrastructure/
-│   ├── persistence/
-│   ├── projections/
-│   └── adapters/
-└── presentation/
-    └── api.py
+└── adapters/
+    ├── persistence/
+    └── services/
 ```
+
+Domain modules use cohesive domain names rather than generic files such as `aggregates.py`, `entities.py`, or `value_objects.py`. FastAPI routers, authentication extraction, Pydantic transport schemas, HTTP error mappings, and operational endpoints belong under `runtime/entrypoints/api/`. Liveness belongs under `runtime/entrypoints/api/system/`; it is a transport concern and does not require an artificial command, query, or domain model.
 
 Dependencies must follow:
 
 ```text
-presentation -> application -> domain
-infrastructure -> application
-infrastructure -> domain
+runtime/bootstrap -> runtime/entrypoints, runtime/infrastructure, context adapters
+runtime/entrypoints -> context application
+context adapters -> context application and domain
+context application -> context domain
+context domain -> optional shared domain
 ```
 
 Rules:
 
-- `domain` imports only the standard library and the shared kernel.
+- Domain code imports only the standard library, its own context, and an explicitly approved shared-domain concept.
 - Domain objects do not inherit from Pydantic or SQLAlchemy models.
 - Application handlers depend on protocols.
-- Infrastructure implements application and domain protocols.
+- Context adapters implement application and domain protocols.
 - FastAPI routes call command or query buses.
+- FastAPI routes do not import persistence adapters or concrete infrastructure.
+- No context module imports `runtime`.
+- `runtime/infrastructure` does not import bounded contexts.
+- Only `runtime/bootstrap` selects and connects concrete adapters.
 - LangGraph is a worker-side orchestration adapter; domain and application packages do not import LangGraph types.
 - LangGraph nodes call application services through explicit ports.
 - LangGraph nodes do not access repositories directly.
 - A bounded context does not load another context's aggregates.
 - Cross-context UI views use explicit read models.
 - Architecture tests enforce import boundaries.
+
+ADR-024 defines the canonical package and test layout, including the distinction between bounded contexts, runtime wiring, context adapters, and optional shared-domain concepts.
 
 ## 8. Domain Modelling Standards
 
@@ -820,6 +834,8 @@ Conventions:
 - `Idempotency-Key` for retryable commands;
 - `If-Match` and `ETag` for optimistic concurrency.
 
+Error contracts use RFC 9457 Problem Details. `runtime/entrypoints/api/errors/` owns the typed Pydantic problem schema and the mapping from transport, application, and domain exceptions to HTTP responses. Domain and application exceptions express business meaning and never contain HTTP status codes. Unexpected failures return a sanitized `500` problem response and retain diagnostic detail only in structured server logs. Validation and expected failure responses are documented in OpenAPI alongside successful responses.
+
 Contract pipeline:
 
 ```text
@@ -928,17 +944,31 @@ polaris/
 ├── apps/
 │   ├── api/
 │   │   ├── src/polaris/
-│   │   │   ├── bootstrap/
-│   │   │   ├── shared_kernel/
-│   │   │   ├── workspaces/
-│   │   │   ├── policy_cases/
-│   │   │   ├── knowledge/
-│   │   │   ├── stakeholders/
-│   │   │   ├── policy_documents/
-│   │   │   ├── analysis/
-│   │   │   ├── evaluation/
-│   │   │   └── platform/
+│   │   │   ├── main.py
+│   │   │   ├── contexts/
+│   │   │   │   ├── workspaces/
+│   │   │   │   ├── policy_cases/
+│   │   │   │   ├── knowledge/
+│   │   │   │   ├── stakeholders/
+│   │   │   │   ├── policy_documents/
+│   │   │   │   ├── analysis/
+│   │   │   │   └── evaluation/
+│   │   │   └── runtime/
+│   │   │       ├── config.py
+│   │   │       ├── bootstrap/
+│   │   │       │   ├── api.py
+│   │   │       │   └── worker.py
+│   │   │       ├── entrypoints/
+│   │   │       │   ├── api/
+│   │   │       │   ├── worker/
+│   │   │       │   └── cli/
+│   │   │       └── infrastructure/
 │   │   ├── tests/
+│   │   │   ├── unit/
+│   │   │   ├── contract/api/
+│   │   │   ├── integration/
+│   │   │   ├── end_to_end/
+│   │   │   └── architecture/
 │   │   └── pyproject.toml
 │   └── web/
 │       ├── src/
@@ -1393,11 +1423,12 @@ ADR-020  Enforce secure development and database-backed workspace isolation
 ADR-021  Govern sensitive data and preserve AI analysis provenance
 ADR-022  Evolve and recover durable data without destructive releases
 ADR-023  Adopt a minimal operability baseline with explicit service objectives
+ADR-024  Structure the Python modular monolith by domain and adapter boundaries
 ```
 
 ## 29. Initial Implementation Order
 
-1. Repository and bounded-context skeleton, TDD harness, architecture tests, security checklist, and accessible UI foundations.
+1. Repository conventions, TDD harness, the first API entrypoint, architecture tests, security checklist, and accessible UI foundations; create no empty layers or placeholder packages.
 2. Command bus, query bus, unit of work, and structurally workspace-scoped application ports.
 3. Local PostgreSQL, explicit migrations, tenant-aware constraints, separate runtime and migration roles, and development authentication.
 4. Workspaces and membership vertical slice with negative cross-workspace tests.

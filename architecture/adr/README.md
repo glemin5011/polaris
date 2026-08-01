@@ -37,6 +37,7 @@ Architecture Decision Records document significant decisions that constrain the 
 | [ADR-021](ADR-021-govern-sensitive-data-and-preserve-ai-analysis-provenance.md) | Govern Sensitive Data and Preserve AI Analysis Provenance | Accepted |
 | [ADR-022](ADR-022-evolve-and-recover-durable-data-without-destructive-releases.md) | Evolve and Recover Durable Data Without Destructive Releases | Accepted |
 | [ADR-023](ADR-023-adopt-a-minimal-operability-baseline-with-explicit-service-objectives.md) | Adopt a Minimal Operability Baseline with Explicit Service Objectives | Accepted |
+| [ADR-024](ADR-024-structure-the-python-modular-monolith-by-domain-and-adapter-boundaries.md) | Structure the Python Modular Monolith by Domain and Adapter Boundaries | Accepted |
 
 ## Process
 
