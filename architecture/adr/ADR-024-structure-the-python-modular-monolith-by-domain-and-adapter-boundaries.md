@@ -54,22 +54,43 @@ Each bounded context grows only the layers required by implemented behavior:
 contexts/policy_cases/
 ├── domain/
 │   ├── policy_case.py
-│   ├── events.py
-│   ├── errors.py
-│   └── repositories.py
+│   ├── policy_case_created.py
+│   ├── policy_case_not_found.py
+│   └── policy_case_repository.py
 ├── application/
 │   ├── commands/
+│   │   ├── create_policy_case.py
+│   │   └── rename_policy_case.py
 │   ├── queries/
-│   ├── dto.py
-│   └── ports.py
+│   │   └── get_policy_case.py
+│   └── read_models/
+│       └── policy_case_summary.py
 └── adapters/
-    ├── persistence/
-    └── services/
+    └── persistence/
+        └── sqlalchemy_policy_case_repository.py
 ```
 
-Domain modules use cohesive domain names rather than generic files such as `aggregates.py` or `entities.py`. Context adapters implement context-owned ports. Transport schemas remain outside the contexts.
+Use one primary public concept per module. Convert its public name to `snake_case` for the filename: `HealthResponse` belongs in `health_response.py`, `PolicyCaseRepository` in `policy_case_repository.py`, and `CreatePolicyCase` in `create_policy_case.py`. Closely related private helpers may remain with that concept.
+
+Do not create generic collection modules such as `schemas.py`, `models.py`, `entities.py`, `dto.py`, `handlers.py`, `utils.py`, `events.py`, `errors.py`, `repositories.py`, `ports.py`, or `services.py`. Use directories to group related concepts and concept-specific filenames within them. Conventional composition and package files such as `__init__.py`, `main.py`, `config.py`, `api_router.py`, and `conftest.py` are permitted when their responsibility is singular and clear.
+
+Context adapters implement context-owned ports. Transport models remain outside the contexts.
 
 FastAPI concerns belong under `runtime/entrypoints/api/`, grouped by API area. This includes routers, authentication extraction, Pydantic request and response schemas, RFC 9457 Problem Details, and exception-to-HTTP mappings. Operational endpoints such as liveness belong under `runtime/entrypoints/api/system/`; they do not require artificial commands, queries, or domain models.
+
+For example:
+
+```text
+runtime/entrypoints/api/
+├── api_router.py
+├── errors/
+│   ├── problem_details.py
+│   └── register_exception_handlers.py
+└── system/
+    └── health/
+        ├── health_response.py
+        └── health_router.py
+```
 
 Dependencies follow these rules:
 
@@ -106,6 +127,7 @@ Do not scaffold empty packages or placeholder layers.
 ### Positive
 
 - The package root clearly separates business capabilities from runtime machinery.
+- Concept-specific filenames make ownership and navigation predictable.
 - Framework, deployment, and transport concerns remain outside bounded contexts.
 - A shared kernel cannot emerge accidentally as a utilities package.
 - API and worker processes can share domain behavior without mixing their composition.
@@ -113,6 +135,7 @@ Do not scaffold empty packages or placeholder layers.
 ### Negative
 
 - Import paths are slightly longer.
+- Small concepts produce more modules than collection-file conventions.
 - `runtime/` requires discipline to remain an outer shell rather than an application-logic layer.
 - Introducing a shared-domain concept requires an explicit architectural decision.
 
@@ -122,11 +145,12 @@ Do not scaffold empty packages or placeholder layers.
 - **Put bootstrap, entrypoints, and infrastructure under `shared/`:** labels application-specific runtime code as reusable shared code.
 - **Create a shared kernel pre-emptively:** encourages speculative abstractions and hidden coupling.
 - **Use global `domain/` and `application/` layers:** obscures bounded contexts and encourages cross-domain dependencies.
+- **Group unrelated public concepts in generic collection modules:** hides ownership and allows files to grow without a cohesive reason to change.
 - **Place operational endpoints in a fake domain or `platform/presentation`:** gives transport concerns misleading domain ownership.
 
 ## Review Triggers
 
-Review this decision if a bounded context is extracted into a separately deployed service, a second transport cannot use the existing runtime boundary cleanly, or architecture tests can no longer express the intended dependency direction.
+Review this decision if a bounded context is extracted into a separately deployed service, a second transport cannot use the existing runtime boundary cleanly, architecture tests can no longer express the intended dependency direction, or concept-specific modules cause measured navigation or maintenance problems.
 
 ## References
 

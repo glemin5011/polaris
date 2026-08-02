@@ -349,20 +349,22 @@ Each bounded context grows the following structure only as real behavior require
 contexts/<context>/
 ├── domain/
 │   ├── <domain-concept>.py
-│   ├── events.py
-│   ├── errors.py
-│   └── repositories.py
+│   ├── <domain-event>.py
+│   ├── <domain-error>.py
+│   └── <repository-interface>.py
 ├── application/
 │   ├── commands/
 │   ├── queries/
-│   ├── dto.py
-│   └── ports.py
+│   ├── read_models/
+│   └── ports/
 └── adapters/
     ├── persistence/
     └── services/
 ```
 
-Domain modules use cohesive domain names rather than generic files such as `aggregates.py`, `entities.py`, or `value_objects.py`. FastAPI routers, authentication extraction, Pydantic transport schemas, HTTP error mappings, and operational endpoints belong under `runtime/entrypoints/api/`. Liveness belongs under `runtime/entrypoints/api/system/`; it is a transport concern and does not require an artificial command, query, or domain model.
+Each module has one primary public concept, and its filename is that concept converted to `snake_case`. Directories group related concepts; generic collection modules such as `schemas.py`, `models.py`, `entities.py`, `dto.py`, `handlers.py`, `utils.py`, `events.py`, `errors.py`, `repositories.py`, `ports.py`, and `services.py` are prohibited. Conventional composition and package files such as `__init__.py`, `main.py`, `config.py`, `api_router.py`, and `conftest.py` are allowed when their responsibility is singular and clear.
+
+FastAPI routers, authentication extraction, Pydantic transport models, HTTP error mappings, and operational endpoints belong under `runtime/entrypoints/api/`. Liveness belongs under `runtime/entrypoints/api/system/health/`, with `HealthResponse` in `health_response.py` and its router in `health_router.py`; it is a transport concern and does not require an artificial command, query, or domain model.
 
 Dependencies must follow:
 
