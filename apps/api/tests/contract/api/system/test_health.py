@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from polaris.runtime.bootstrap.api import create_app
-from polaris.runtime.entrypoints.api.system.responses.health_response import HealthResponse
+from polaris.runtime.entrypoints.api.system.health.health_response import HealthResponse
 
 
 def test_health_endpoint_reports_ok() -> None:
