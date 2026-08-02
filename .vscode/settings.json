@@ -1,0 +1,22 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/apps/api/.venv",
+  "python.analysis.extraPaths": ["${workspaceFolder}/apps/api/src"],
+  "python.analysis.include": ["apps/api/src", "apps/api/tests"],
+  "python.analysis.typeCheckingMode": "strict",
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["apps/api/tests"],
+
+  "ruff.enable": true,
+  "ruff.nativeServer": "on",
+  "ruff.lint.enable": true,
+  "ruff.configurationPreference": "filesystemFirst",
+
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  }
+}
