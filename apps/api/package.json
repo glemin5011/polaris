@@ -5,6 +5,8 @@
     "dev": "uv run uvicorn polaris.main:app --reload --port 8765",
     "test": "uv run pytest",
     "lint": "uv run ruff check .",
-    "check-types": "uv run pyright"
+    "check-types": "uv run pyright",
+    "openapi": "uv run python scripts/export_openapi.py",
+    "openapi:check": "uv run pytest tests/contract/api/test_openapi_contract.py"
   }
 }

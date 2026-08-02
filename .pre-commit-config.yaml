@@ -35,6 +35,16 @@ repos:
         stages:
           - pre-commit
 
+      - id: generate-openapi
+        name: Generate the OpenAPI contract
+        entry: pnpm run openapi
+        language: system
+        pass_filenames: false
+        require_serial: true
+        files: '^(apps/api/src/.*\.py|apps/api/pyproject\.toml|apps/api/uv\.lock|apps/api/scripts/export_openapi\.py|contracts/openapi\.json)$'
+        stages:
+          - pre-commit
+
       - id: workspace-lint
         name: Workspace lint (Ruff and ESLint)
         entry: pnpm run lint
@@ -56,6 +66,15 @@ repos:
       - id: api-tests
         name: FastAPI tests
         entry: uv run --project apps/api pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages:
+          - pre-push
+
+      - id: check-openapi
+        name: Check the OpenAPI contract
+        entry: pnpm run openapi:check
         language: system
         pass_filenames: false
         always_run: true
