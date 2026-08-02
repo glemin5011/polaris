@@ -1,0 +1,63 @@
+minimum_pre_commit_version: "4.0.0"
+
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+
+fail_fast: false
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: Ruff format staged Python files
+        entry: uv run --project apps/api ruff format
+        language: system
+        files: '^apps/api/.*\.py$'
+        require_serial: true
+        stages:
+          - pre-commit
+
+      - id: ruff-check
+        name: Ruff lint staged Python files
+        entry: uv run --project apps/api ruff check
+        language: system
+        files: '^apps/api/.*\.py$'
+        stages:
+          - pre-commit
+
+      - id: prettier
+        name: Prettier format staged files
+        entry: pnpm exec prettier --write
+        language: system
+        files: '\.(?:[cm]?[jt]sx?|json|mdx?|css|ya?ml)$'
+        require_serial: true
+        stages:
+          - pre-commit
+
+      - id: workspace-lint
+        name: Workspace lint (Ruff and ESLint)
+        entry: pnpm run lint
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages:
+          - pre-push
+
+      - id: workspace-typecheck
+        name: Workspace type checking (Pyright and TypeScript)
+        entry: pnpm run check-types
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages:
+          - pre-push
+
+      - id: api-tests
+        name: FastAPI tests
+        entry: uv run --project apps/api pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages:
+          - pre-push

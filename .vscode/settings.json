@@ -1,17 +1,10 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/apps/api/.venv",
-  "python.analysis.extraPaths": [
-    "${workspaceFolder}/apps/api/src"
-  ],
-  "python.analysis.include": [
-    "apps/api/src",
-    "apps/api/tests"
-  ],
+  "python.analysis.extraPaths": ["${workspaceFolder}/apps/api/src"],
+  "python.analysis.include": ["apps/api/src", "apps/api/tests"],
   "python.analysis.typeCheckingMode": "strict",
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": [
-    "apps/api/tests"
-  ],
+  "python.testing.pytestArgs": ["apps/api/tests"],
 
   "ruff.enable": true,
   "ruff.nativeServer": "on",

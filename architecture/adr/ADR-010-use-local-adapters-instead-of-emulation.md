@@ -12,15 +12,15 @@ Local development must require no AWS account or cloud infrastructure. Emulating
 
 Define application ports and provide local adapters:
 
-| Capability     | Local adapter                                                        | Deployed adapter                                      |
-| -------------- | -------------------------------------------------------------------- | ----------------------------------------------------- |
-| Blob storage   | Filesystem                                                           | S3                                                    |
-| Job dispatch   | PostgreSQL queue                                                     | SQS                                                   |
-| Job execution  | Local worker                                                         | AWS Batch                                             |
-| Authentication | Development-only Auth.js identity provider and FastAPI auth adapter | Auth.js with Cognito                                  |
-| Database       | PostgreSQL container                                                 | Aurora PostgreSQL                                     |
-| Secrets        | Environment file                                                     | Vercel sensitive variables, Secrets Manager, or IAM  |
-| LLM            | Ollama or provider API                                               | Bedrock or provider API                               |
+| Capability     | Local adapter                                                       | Deployed adapter                                    |
+| -------------- | ------------------------------------------------------------------- | --------------------------------------------------- |
+| Blob storage   | Filesystem                                                          | S3                                                  |
+| Job dispatch   | PostgreSQL queue                                                    | SQS                                                 |
+| Job execution  | Local worker                                                        | AWS Batch                                           |
+| Authentication | Development-only Auth.js identity provider and FastAPI auth adapter | Auth.js with Cognito                                |
+| Database       | PostgreSQL container                                                | Aurora PostgreSQL                                   |
+| Secrets        | Environment file                                                    | Vercel sensitive variables, Secrets Manager, or IAM |
+| LLM            | Ollama or provider API                                              | Bedrock or provider API                             |
 
 Use Docker Compose only for PostgreSQL with pgvector and optional Ollama.
 

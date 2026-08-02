@@ -902,15 +902,15 @@ Docker Compose:
 
 Environment adapters:
 
-| Port           | Local                                                        | Deployed                                              |
-| -------------- | ------------------------------------------------------------ | ----------------------------------------------------- |
-| Blob storage   | Filesystem                                                   | S3                                                    |
-| Job dispatch   | PostgreSQL queue                                             | SQS                                                   |
-| Job execution  | Local worker                                                 | AWS Batch                                             |
-| Authentication | Auth.js development identity and FastAPI development-auth adapter | Auth.js with Cognito                              |
-| Database       | PostgreSQL container                                         | Aurora PostgreSQL                                     |
-| Secrets        | `.env`                                                       | Vercel sensitive variables, Secrets Manager, or IAM  |
-| LLM            | Ollama or provider API                                       | Bedrock or external provider                          |
+| Port           | Local                                                             | Deployed                                            |
+| -------------- | ----------------------------------------------------------------- | --------------------------------------------------- |
+| Blob storage   | Filesystem                                                        | S3                                                  |
+| Job dispatch   | PostgreSQL queue                                                  | SQS                                                 |
+| Job execution  | Local worker                                                      | AWS Batch                                           |
+| Authentication | Auth.js development identity and FastAPI development-auth adapter | Auth.js with Cognito                                |
+| Database       | PostgreSQL container                                              | Aurora PostgreSQL                                   |
+| Secrets        | `.env`                                                            | Vercel sensitive variables, Secrets Manager, or IAM |
+| LLM            | Ollama or provider API                                            | Bedrock or external provider                        |
 
 The local Auth.js development identity provider and the FastAPI development-auth adapter use an explicit local-only configuration. Both must fail closed and be unavailable in preview and production. Local development requires neither Cognito nor Vercel. The local worker and AWS Batch invoke the same `JobRunner`.
 
@@ -1064,23 +1064,23 @@ Use `contextvars` for:
 
 ## 20. Deployment
 
-| Concern                    | Platform or service                       |
-| -------------------------- | ----------------------------------------- |
-| Web runtime                | Vercel Next.js runtime                    |
-| Web delivery               | Vercel Git integration, CDN, and Functions |
-| Authentication             | Auth.js with Cognito User Pool            |
-| HTTP API                   | API Gateway HTTP API                      |
-| API authentication        | API Gateway JWT authorizer and FastAPI authorization |
-| Synchronous backend        | AWS Lambda container                      |
-| Relational and vector data | Aurora PostgreSQL with pgvector           |
-| Documents and artifacts    | Amazon S3                                 |
-| Job queue                  | Amazon SQS                                |
-| Queue-to-job integration   | EventBridge Pipes                         |
-| Outbox recovery relay      | EventBridge Scheduler and Lambda          |
-| Background compute         | AWS Batch on Fargate                      |
-| Container registry         | Amazon ECR                                |
-| Secrets                    | Vercel sensitive variables, Secrets Manager, and IAM |
-| Logs and metrics           | Vercel observability and CloudWatch       |
+| Concern                    | Platform or service                                      |
+| -------------------------- | -------------------------------------------------------- |
+| Web runtime                | Vercel Next.js runtime                                   |
+| Web delivery               | Vercel Git integration, CDN, and Functions               |
+| Authentication             | Auth.js with Cognito User Pool                           |
+| HTTP API                   | API Gateway HTTP API                                     |
+| API authentication         | API Gateway JWT authorizer and FastAPI authorization     |
+| Synchronous backend        | AWS Lambda container                                     |
+| Relational and vector data | Aurora PostgreSQL with pgvector                          |
+| Documents and artifacts    | Amazon S3                                                |
+| Job queue                  | Amazon SQS                                               |
+| Queue-to-job integration   | EventBridge Pipes                                        |
+| Outbox recovery relay      | EventBridge Scheduler and Lambda                         |
+| Background compute         | AWS Batch on Fargate                                     |
+| Container registry         | Amazon ECR                                               |
+| Secrets                    | Vercel sensitive variables, Secrets Manager, and IAM     |
+| Logs and metrics           | Vercel observability and CloudWatch                      |
 | Infrastructure             | AWS Terraform and source-controlled Vercel configuration |
 
 ### 20.1 Web Deployment
@@ -1359,43 +1359,43 @@ Compatible API changes deploy before their frontend consumers. Breaking changes 
 
 Scale only after measurement.
 
-| Trigger                                               | Change                               |
-| ----------------------------------------------------- | ------------------------------------ |
-| Lambda exhausts database connections                  | Add RDS Proxy or revise concurrency  |
-| Analysis jobs exceed acceptable duration              | Fan out stakeholder reviews          |
-| Batch startup dominates short jobs                    | Add a lightweight Lambda worker path |
-| PostgreSQL retrieval becomes insufficient             | Evaluate OpenSearch                  |
+| Trigger                                               | Change                                                             |
+| ----------------------------------------------------- | ------------------------------------------------------------------ |
+| Lambda exhausts database connections                  | Add RDS Proxy or revise concurrency                                |
+| Analysis jobs exceed acceptable duration              | Fan out stakeholder reviews                                        |
+| Batch startup dominates short jobs                    | Add a lightweight Lambda worker path                               |
+| PostgreSQL retrieval becomes insufficient             | Evaluate OpenSearch                                                |
 | BFF latency, availability, or cost exceeds its target | Measure and evaluate selective optimization or self-hosted Next.js |
-| One context requires independent ownership or scaling | Evaluate service extraction          |
-| One embedding profile is insufficient                 | Add versioned embedding indexes      |
-| Public or untrusted uploads are introduced             | Add managed malware scanning and stronger upload isolation |
-| An external pilot needs release acceptance             | Add an isolated staging environment  |
-| Data sensitivity exceeds the documented POC boundary   | Stop ingestion and perform a security and governance review |
+| One context requires independent ownership or scaling | Evaluate service extraction                                        |
+| One embedding profile is insufficient                 | Add versioned embedding indexes                                    |
+| Public or untrusted uploads are introduced            | Add managed malware scanning and stronger upload isolation         |
+| An external pilot needs release acceptance            | Add an isolated staging environment                                |
+| Data sensitivity exceeds the documented POC boundary  | Stop ingestion and perform a security and governance review        |
 
 A bounded context is not extracted into a service solely because it has a clean boundary.
 
 ## 27. Rejected Alternatives
 
-| Alternative                           | Decision                                                      |
-| ------------------------------------- | ------------------------------------------------------------- |
-| Static S3 and CloudFront frontend      | Cannot provide the adopted server-held Auth.js session and BFF |
-| Browser-managed Cognito PKCE           | Browser JavaScript must not own Cognito access or refresh tokens |
-| Cognito token in Auth.js client session | Client session exposes display data only                      |
-| Next.js as the business API            | FastAPI remains the single application API                    |
-| Direct Vercel-to-Aurora access         | The web runtime is isolated from persistence and the VPC       |
-| Fargate service for the API            | Lambda avoids idle tasks and load balancer cost               |
-| Lambda for Docling                     | Batch supports heavier and longer-running workloads           |
-| Separate vector database               | PostgreSQL provides relational, lexical, and vector retrieval |
-| Redis and Celery                       | SQS, Batch, and PostgreSQL cover required execution models    |
-| Step Functions for analysis            | LangGraph owns AI workflow state and checkpoints              |
-| LocalStack                             | Local adapters remove AWS dependencies                        |
-| Event sourcing                         | Auditability does not require replay-based persistence        |
-| Separate CQRS databases                | One database avoids distributed consistency                   |
-| One Batch job per stakeholder          | Bounded in-job concurrency is simpler initially               |
-| Kubernetes                             | No operational requirement justifies it                       |
-| Mandatory staging for a one-developer POC | Duplicates cloud resources before an external release process exists |
-| PostgreSQL row-level security in the POC | Application, repository, schema, and test controls provide adequate initial isolation |
-| Mandatory malware scanning for invited uploads | Bounded validation and a restricted data/user scope are proportionate initially |
+| Alternative                                    | Decision                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Static S3 and CloudFront frontend              | Cannot provide the adopted server-held Auth.js session and BFF                        |
+| Browser-managed Cognito PKCE                   | Browser JavaScript must not own Cognito access or refresh tokens                      |
+| Cognito token in Auth.js client session        | Client session exposes display data only                                              |
+| Next.js as the business API                    | FastAPI remains the single application API                                            |
+| Direct Vercel-to-Aurora access                 | The web runtime is isolated from persistence and the VPC                              |
+| Fargate service for the API                    | Lambda avoids idle tasks and load balancer cost                                       |
+| Lambda for Docling                             | Batch supports heavier and longer-running workloads                                   |
+| Separate vector database                       | PostgreSQL provides relational, lexical, and vector retrieval                         |
+| Redis and Celery                               | SQS, Batch, and PostgreSQL cover required execution models                            |
+| Step Functions for analysis                    | LangGraph owns AI workflow state and checkpoints                                      |
+| LocalStack                                     | Local adapters remove AWS dependencies                                                |
+| Event sourcing                                 | Auditability does not require replay-based persistence                                |
+| Separate CQRS databases                        | One database avoids distributed consistency                                           |
+| One Batch job per stakeholder                  | Bounded in-job concurrency is simpler initially                                       |
+| Kubernetes                                     | No operational requirement justifies it                                               |
+| Mandatory staging for a one-developer POC      | Duplicates cloud resources before an external release process exists                  |
+| PostgreSQL row-level security in the POC       | Application, repository, schema, and test controls provide adequate initial isolation |
+| Mandatory malware scanning for invited uploads | Bounded validation and a restricted data/user scope are proportionate initially       |
 
 ## 28. Architecture Decision Records
 
