@@ -5,9 +5,13 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write --ignore-unknown . && uv run --project apps/api ruff format apps/api/src apps/api/tests",
+    "format:check": "prettier --check --ignore-unknown . && uv run --project apps/api ruff format --check apps/api/src apps/api/tests",
+    "test": "turbo run test",
     "check-types": "turbo run check-types",
-    "commit": "cz"
+    "commit": "cz",
+    "openapi": "turbo run openapi --filter=@polaris/api",
+    "openapi:check": "turbo run openapi:check --filter=@polaris/api"
   },
   "config": {
     "commitizen": {

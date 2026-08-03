@@ -13,9 +13,18 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "test": {
+      "dependsOn": ["^test"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "openapi": {
+      "cache": false
+    },
+    "openapi:check": {
+      "cache": false
     }
   }
 }
