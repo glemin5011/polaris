@@ -41,3 +41,24 @@ line-length = 100
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--strict-markers", "--strict-config"]
+
+[tool.uv]
+
+# Only resolve distributions uploaded at least seven days ago.
+# TODO: Bump this up to 1 week after 8th August 2026.
+exclude-newer = "2 days"
+
+# Prevent dependency-confusion when additional indices are introduced
+index-strategy = "first-index"
+
+# Do not select prereleases implicitly
+prerelease = "disallow"
+
+
+# Required while uv's malware checking remains a preview feature
+preview-features = ["malware-check"]
+
+[tool.uv.audit]
+
+# Reject locked packages identified as malware by OS / OpenSSF.
+malware-check = true
