@@ -18,5 +18,6 @@
       "source.fixAll.ruff": "explicit",
       "source.organizeImports.ruff": "explicit"
     }
-  }
+  },
+  "prettier.prettierPath": "./node_modules/prettier"
 }

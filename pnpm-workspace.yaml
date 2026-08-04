@@ -1,3 +1,38 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+# Seven days minimum age (in minutes) to prevent SCAs
+minimumReleaseAge: 10080
+
+# Fail instead of falling back to a version younger than seven days.
+minimumReleaseAgeStrict: true
+
+# Fail closed when registry metadata omits publication timestamps.
+minimumReleaseAgeIgnoreMissingTime: false
+
+# Revalidate every lockfile package - do not assume the lockfile is trusted.
+trustLockfile: false
+
+# Reject releases whose provenance / trust is weaker than older releases
+trustPolicy: no-downgrade
+
+# Prevent transitive dependencies from introducing Git or arbitrary URL sources
+blockExoticSubdeps: true
+
+# Fail when a dependency attempts to execute an unreviewed install script
+strictDepBuilds: true
+
+trustPolicyIgnoreAfter: 10080
+
+minimumReleaseAgeExclude:
+  - "@turbo/darwin-64@2.10.8"
+  - "@turbo/darwin-arm64@2.10.8"
+  - "@turbo/linux-64@2.10.8"
+  - "@turbo/linux-arm64@2.10.8"
+  - "@turbo/windows-64@2.10.8"
+  - "@turbo/windows-arm64@2.10.8"
+  - turbo@2.10.8
+
+allowBuilds:
+  "sharp@0.34.5": true
