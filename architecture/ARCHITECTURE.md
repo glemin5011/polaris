@@ -2,7 +2,7 @@
 
 > **Status:** Accepted  
 > **Scope:** credible portfolio deployment  
-> **Last updated:** 2026-08-01
+> **Last updated:** 2026-08-04
 
 POLARIS is a Domain-Driven Design and CQRS modular monolith. It runs locally without cloud infrastructure and deploys across Vercel and AWS using serverless and ephemeral compute.
 
@@ -13,7 +13,7 @@ This architecture is intentionally sized for a single-developer portfolio projec
 | Area                 | Decision                                      |
 | -------------------- | --------------------------------------------- |
 | Architecture         | Modular monolith                              |
-| Backend              | Python 3.13, FastAPI                          |
+| Backend              | Python 3.14.6, FastAPI                        |
 | Frontend             | TypeScript, Next.js App Router on Vercel      |
 | API hosting          | API Gateway HTTP API and AWS Lambda           |
 | Background compute   | AWS Batch on Fargate                          |
@@ -1024,7 +1024,7 @@ polaris-worker
 Baseline tooling:
 
 ```text
-Python 3.13
+Python 3.14.6
 uv
 Ruff
 Pyright strict
@@ -1415,7 +1415,7 @@ ADR-010  Use local adapters instead of AWS emulation
 ADR-011  Deploy Next.js on Vercel as an authenticated BFF
 ADR-012  Keep business APIs out of Next.js
 ADR-013  Generate the TypeScript client from OpenAPI
-ADR-014  Use Python 3.13 with strict typing
+ADR-014  Use Python 3.14.6 with strict typing
 ADR-015  Use synchronous projections by default
 ADR-016  Avoid a NAT Gateway
 ADR-017  Use a transactional outbox for background dispatch

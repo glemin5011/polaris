@@ -1,7 +1,7 @@
-# ADR-014: Use Python 3.13 with Strict Static Typing
+# ADR-014: Use Python 3.14.6 with Strict Static Typing
 
 - **Status:** Accepted
-- **Date:** 2026-08-01
+- **Date:** 2026-08-04
 - **Decision owners:** POLARIS maintainers
 
 ## Context
@@ -10,7 +10,7 @@ POLARIS is a learning and portfolio project focused on advanced Python design, e
 
 ## Decision
 
-Use Python 3.13 with:
+Use Python 3.14.6 with:
 
 - `uv` for dependency and environment management;
 - Ruff for linting and formatting;
@@ -23,7 +23,7 @@ Use Python 3.13 with:
 - property-based tests for domain invariants;
 - architecture tests for module boundaries.
 
-Pin the Python minor version across local development, containers, and CI.
+Pin the exact Python version across local development, containers, and CI.
 
 ## Consequences
 
@@ -38,7 +38,7 @@ Pin the Python minor version across local development, containers, and CI.
 
 - Some third-party libraries require stubs or typed adapters.
 - Strict typing adds implementation effort.
-- Runtime upgrades require dependency validation.
+- Runtime upgrades require dependency validation and coordinated version updates across every environment.
 
 ## Rejected Alternatives
 
@@ -48,4 +48,4 @@ Pin the Python minor version across local development, containers, and CI.
 
 ## Review Triggers
 
-Review this decision when Python 3.13 leaves upstream security support, a required dependency cannot support it, or the chosen type checker prevents adoption of a necessary library without a safe typed boundary.
+Review this decision when Python 3.14 approaches the end of security support, a required dependency cannot support Python 3.14.6, a security or compatibility fix requires a newer patch release, or the chosen type checker prevents adoption of a necessary library without a safe typed boundary.

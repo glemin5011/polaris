@@ -27,7 +27,7 @@ Architecture Decision Records document significant decisions that constrain the 
 | [ADR-011](ADR-011-deploy-nextjs-on-vercel-as-an-authenticated-bff.md)                          | Deploy Next.js on Vercel as an Authenticated BFF                         | Accepted |
 | [ADR-012](ADR-012-keep-business-apis-out-of-nextjs.md)                                         | Keep Business APIs out of Next.js                                        | Accepted |
 | [ADR-013](ADR-013-generate-the-typescript-client-from-openapi.md)                              | Generate the TypeScript Client from OpenAPI                              | Accepted |
-| [ADR-014](ADR-014-use-python-3.13-with-strict-static-typing.md)                                | Use Python 3.13 with Strict Static Typing                                | Accepted |
+| [ADR-014](ADR-014-use-python-3.14.6-with-strict-static-typing.md)                              | Use Python 3.14.6 with Strict Static Typing                              | Accepted |
 | [ADR-015](ADR-015-use-synchronous-projections-by-default.md)                                   | Use Synchronous Projections by Default                                   | Accepted |
 | [ADR-016](ADR-016-avoid-a-nat-gateway.md)                                                      | Avoid a NAT Gateway                                                      | Accepted |
 | [ADR-017](ADR-017-use-a-transactional-outbox-for-background-dispatch.md)                       | Use a Transactional Outbox for Background Dispatch                       | Accepted |
